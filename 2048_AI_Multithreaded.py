@@ -20,7 +20,7 @@ input_source = "AI"
 
 # AI running values
 population_count = 25
-run_max = 1000
+run_max = 100
 gen_max = 100
 pair_count = math.floor(math.sqrt(population_count))
 
@@ -423,10 +423,14 @@ elif input_source == "AI":
             time_end = time.time()
             time_average = (time_end - time_start) / int(gen_max / 10)
             time_start = time_end
+            t_2 = time.time()
+            remaining_gens = gen_max - gen
+            estimated_time = ((t_2 - t_1) / gen) * remaining_gens
             print ("Best performers:")
             for i  in range(pair_count):
                 print ("\tID:", int(best_index[i][0]), ", Average Score:", round(best_index[i][1], 2), ", Average Steps:", round(best_index[i][2], 2))
-            print ("\tAverage time per generation:", format_seconds(round(time_average, 2)), '\n')
+            print ("\tAverage time per generation:", format_seconds(round(time_average, 2)))
+            print ("\tEstimated time to completion:", format_seconds(round(estimated_time, 2)), '\n')
 
     #########################
     # Genetic Algoritm Part #
@@ -473,6 +477,8 @@ elif input_source == "AI":
                 bias_1[calc_index] = numpy.random.rand(node_1,1) * 0.5
                 bias_out[calc_index] = numpy.random.rand(node_out,1) * 0.5
                 calc_index += 1
+
+        
 
     t_2 = time.time()
     total_elapsed = round(t_2 - t_1, 3)
