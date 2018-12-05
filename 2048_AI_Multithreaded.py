@@ -13,13 +13,13 @@ numpy.random.seed(100)
 
 # Multithreading definitions
 writing_lock = threading.Lock()
-thread_count = 6
+thread_count = 7
 
 # Player
 input_source = "AI"
 
 # AI running values
-population_count = 10
+population_count = 25
 run_max = 1000
 gen_max = 100
 pair_count = math.floor(math.sqrt(population_count))
@@ -60,6 +60,16 @@ display_board = numpy.zeros((4, 4), dtype=numpy.int64)
 # Function Definitions #
 ########################
 
+# format float seconds to HH:MM:SS
+def format_seconds(seconds):
+    hours = math.floor(seconds / 3600)
+    seconds -= hours * 3600
+    minutes = math.floor(seconds / 60)
+    seconds -= minutes * 60
+
+    f = "{:02}:{:02}:{:2.3f}".format(hours, minutes, seconds)
+
+    return f
 
 # Fill a random cell, 10% change of 4 instead of 2
 def random_value(start = False):
@@ -382,7 +392,7 @@ elif input_source == "AI":
     print ("Number of threads:", thread_count)
     print ("Number of generations:", gen_max)
     print ("Population per generation:", population_count)
-    print ("Max runs per populatio member:", run_max)
+    print ("Max runs per population member:", run_max)
     print ("Carryover per generation:", pair_count, '\n')
 
     time_start = time.time()
@@ -415,8 +425,8 @@ elif input_source == "AI":
             time_start = time_end
             print ("Best performers:")
             for i  in range(pair_count):
-                print ("\tID:", int(best_index[i][0]), ", Average Score:", best_index[i][1], ", Average Steps:", best_index[i][2])
-            print ("\tAverage time per generation:", round(time_average, 2), '\n')
+                print ("\tID:", int(best_index[i][0]), ", Average Score:", round(best_index[i][1], 2), ", Average Steps:", round(best_index[i][2], 2))
+            print ("\tAverage time per generation:", format_seconds(round(time_average, 2)), '\n')
 
     #########################
     # Genetic Algoritm Part #
@@ -465,7 +475,8 @@ elif input_source == "AI":
                 calc_index += 1
 
     t_2 = time.time()
-    print ("Total time:", round(t_2 - t_1, 2))
+    total_elapsed = round(t_2 - t_1, 3)
+    print ("Total time:", format_seconds(total_elapsed))
 
 
 
