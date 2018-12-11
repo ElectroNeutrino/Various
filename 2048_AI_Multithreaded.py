@@ -452,7 +452,7 @@ elif input_source == "AI":
         for thread in running_threads:
             thread.join()
 
-        total_elapse.append(time.time() - time_start)
+        total_elapse.append(time.time() - t_1)
         # Output every n generations
         if ((gen+1)%10 == 0) or gen == (gen_max-1):
             time_end = time.time()
