@@ -19,8 +19,8 @@ thread_count = 7
 input_source = "AI"
 
 # AI running values
-population_count = 25
-run_max = 100
+population_count = 10
+run_max = 1000
 gen_max = 100
 pair_count = math.floor(math.sqrt(population_count))
 
@@ -67,7 +67,7 @@ def format_seconds(seconds):
     minutes = math.floor(seconds / 60)
     seconds -= minutes * 60
 
-    f = "{:02}:{:02}:{:2.3f}".format(hours, minutes, seconds)
+    f = "{:02}:{:02}:{:05.2f}".format(hours, minutes, seconds)
 
     return f
 
@@ -84,7 +84,7 @@ def random_value(start = False):
     # Select one of the 16 cells as the initial value
     i = random.choice(range (16))
     exclude_list = []
-    while continue_game and not (game_board[numpy.unravel_index(i,(4,4))] == 0):
+    while continue_game and len(exclude_list) < 16 and not (game_board[numpy.unravel_index(i,(4,4))] == 0):
         # if cell not empty, add to exclude list and choose another cell
         i = random.choice([j for j in range (16) if j not in exclude_list])
         exclude_list.append(i)
@@ -266,6 +266,24 @@ def initialize_board():
     random_value(True)
     return
 
+def calculate_move(input_intermediate_array, bias_1, intermediate_output_array, bias_out, pop):
+    input_values = numpy.zeros((node_in, 1), dtype=numpy.float64)
+    # input values from game_board
+    for x in range(4):
+        for y in range(4):
+            input_values[x*4 + y][0] = game_board[x][y]
+
+    # calculate next layer
+    intermediate_values = sigmoid(input_intermediate_array[pop].dot(input_values) + bias_1[pop])
+    #calculate output values
+    output_values = sigmoid(intermediate_output_array[pop].dot(sigmoid(input_intermediate_array[pop].dot(input_values) + bias_1[pop])) + bias_out[pop])
+
+    # get direction to move
+    ai_direction = input_type[numpy.argmax(output_values)]
+
+    return ai_direction
+
+
 def run_single_pop(input_intermediate_array, bias_1, intermediate_output_array, bias_out, average_score, best_index, j):
     for pop in [k for k in range(population_count) if (k%4==j)]:
         running_score = 0
@@ -278,37 +296,12 @@ def run_single_pop(input_intermediate_array, bias_1, intermediate_output_array, 
             initialize_board()
 
             # calculate first move
-            # input values from game_board
-            for x in range(4):
-                for y in range(4):
-                    input_values[x*4 + y][0] = game_board[x][y]
-
-            # calculate next layer
-            intermediate_values = sigmoid(input_intermediate_array[pop].dot(input_values) + bias_1[pop])
-            #calculate output values
-            output_values = sigmoid(intermediate_output_array[pop].dot(intermediate_values) + bias_out[pop])
-
-            # get direction to move
-            ai_direction = input_type[numpy.argmax(output_values)]
+            ai_direction = calculate_move(input_intermediate_array, bias_1, intermediate_output_array, bias_out, pop)
             
             # Run single game
             index = 1
             while(move(ai_direction)):
-                # input values from game_board
-                for x in range(4):
-                    for y in range(4):
-                        input_values[x*4 + y][0] = game_board[x][y]
-
-                # calculate next layer
-                intermediate_values = sigmoid(input_intermediate_array[pop].dot(input_values) + bias_1[pop])
-                #calculate output values
-                output_values = sigmoid(intermediate_output_array[pop].dot(intermediate_values) + bias_out[pop])
-                
-                #output_sum = numpy.sum(output_vlues)
-                #output_squares = numpy.linalg.norm(output_values)**2
-
-                # get direction to move
-                ai_direction = input_type[numpy.argmax(output_values)]
+                ai_direction = calculate_move(input_intermediate_array, bias_1, intermediate_output_array, bias_out, pop)
                 index += 1
             running_score += total_score
             running_steps += index
@@ -400,7 +393,7 @@ elif input_source == "AI":
 
     for gen in range(gen_max):
 
-        print ("Generation:", gen)
+        print ("Generation:", gen + 1)
 
         # initialize empty averages
         best_index = numpy.zeros((pair_count, 3), dtype=numpy.float64)
@@ -425,12 +418,13 @@ elif input_source == "AI":
             time_start = time_end
             t_2 = time.time()
             remaining_gens = gen_max - gen
-            estimated_time = ((t_2 - t_1) / gen) * remaining_gens
+            estimated_time = ((t_2 - t_1) / (gen + 1)) * remaining_gens
+            print ("Average time per generation:", format_seconds(round(time_average, 2)))
+            print ("Estimated time to completion:", format_seconds(round(estimated_time, 2)))
             print ("Best performers:")
             for i  in range(pair_count):
                 print ("\tID:", int(best_index[i][0]), ", Average Score:", round(best_index[i][1], 2), ", Average Steps:", round(best_index[i][2], 2))
-            print ("\tAverage time per generation:", format_seconds(round(time_average, 2)))
-            print ("\tEstimated time to completion:", format_seconds(round(estimated_time, 2)), '\n')
+            print('\n')
 
     #########################
     # Genetic Algoritm Part #
