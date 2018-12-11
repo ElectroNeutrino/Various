@@ -327,17 +327,17 @@ def run_single_pop(a_1, a_2, average_score, best_index, j):
             
             # Run single game
             index = 1
-            prev_score = [0] * 10
+            prev_score = [0] * 100
             while(move(ai_direction)):
                 ai_direction = calculate_move(a_1, a_2, pop)
 
                 # exit if score does not change after 10 moves
-                for i in range(9):
+                for i in range(99):
                     prev_score[i] = prev_score[i + 1]
-                if prev_score[0] == prev_score[9] and index > 10:
+                if prev_score[0] == prev_score[99] and index > 100:
                     break
                 else:
-                    prev_score[9] = total_score
+                    prev_score[99] = total_score
 
                 index += 1
             running_score += total_score
@@ -465,7 +465,8 @@ elif input_source == "AI":
             print ("Estimated time to completion:", format_seconds(round(estimated_time, 2)))
             print ("Best performers:")
             for i  in range(pair_count):
-                print ("\tID:", int(best_index[i][0]), ", Average Score:", round(best_index[i][1], 2), ", Average Steps:", round(best_index[i][2], 2))
+                print ("\tID:", int(best_index[i][0]), ", Average Score:", round(best_index[i][1], 2),
+                       ", Average Steps:", round(best_index[i][2], 2))
             print('\n')
             try:
                 numpy.savetxt("time.csv", total_elapse, delimiter=",")
@@ -487,24 +488,28 @@ elif input_source == "AI":
             # Calculate new population members (take best and averages of them, fill rest with random)
             calc_index = 0
             for x in range(pair_count):
+                index_x = int(best_index[x][0])
                 for y in range(x,pair_count):
+                    index_y = int(best_index[y][0])
                     if x==y: # Add best
-                        intermediate_value_array[calc_index] = new_IIA[int(best_index[x][0])]
-                        output_value_array[calc_index] = new_IOA[int(best_index[x][0])]
+                        intermediate_value_array[calc_index] = new_IIA[index_x]
+                        output_value_array[calc_index] = new_IOA[index_x]
 
-                        bias[calc_index] = new_bias[int(best_index[x][0])]
+                        bias[calc_index] = new_bias[index_x]
                     else: # average and add pairs of best
-                        intermediate_value_array[calc_index] = (new_IIA[int(best_index[x][0])] + new_IIA[int(best_index[y][0])]) * 0.5
-                        output_value_array[calc_index] = (new_IOA[int(best_index[x][0])] + new_IOA[int(best_index[y][0])]) * 0.5
+                        intermediate_value_array[calc_index] = (new_IIA[index_x] + new_IIA[index_y]) * 0.5
+                        output_value_array[calc_index] = (new_IOA[index_x] + new_IOA[index_y]) * 0.5
 
-                        bias[calc_index] = (new_bias[int(best_index[x][0])] + new_bias[int(best_index[y][0])]) * 0.5
+                        bias[calc_index] = (new_bias[index_x] + new_bias[index_y]) * 0.5
                     calc_index += 1
 
-            for x in range(pair_count): # average and add best with random
-                intermediate_value_array[calc_index] = (new_IIA[int(best_index[x][0])] + numpy.random.rand(node_in, node_1)) * 0.5
-                output_value_array[calc_index] = (new_IOA[int(best_index[x][0])] + numpy.random.rand(node_1, node_out)) * 0.5
+#            for x in range(pair_count): # average and add best with random
+#                index_x = int(best_index[x][0])
 
-                bias[calc_index] = (new_bias[int(best_index[x][0])] + numpy.random.rand(node_1)) * 0.5
+                intermediate_value_array[calc_index] = (new_IIA[index_x] + numpy.random.rand(node_in, node_1)) * 0.5
+                output_value_array[calc_index] = (new_IOA[index_x] + numpy.random.rand(node_1, node_out)) * 0.5
+
+                bias[calc_index] = (new_bias[index_x] + numpy.random.rand(node_1)) * 0.5
                 calc_index += 1
 
             while calc_index < pop_count: #fill rest with random
