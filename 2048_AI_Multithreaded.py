@@ -328,10 +328,12 @@ def run_single_pop(a_1, a_2, average_score, best_index, j):
             # Run single game
             index = 1
             prev_score = [0] * 100
-            while(move(ai_direction)):
+            continue_run = True
+            while continue_run:
                 ai_direction = calculate_move(a_1, a_2, pop)
+                continue_run = move(ai_direction)
 
-                # exit if score does not change after 10 moves
+                # exit if score does not change after 100 moves
                 for i in range(99):
                     prev_score[i] = prev_score[i + 1]
                 if prev_score[0] == prev_score[99] and index > 100:
