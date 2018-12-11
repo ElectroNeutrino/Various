@@ -4,6 +4,7 @@ import math
 import time
 import threading
 
+
 ###############
 # Definitions #
 ###############
@@ -19,10 +20,10 @@ thread_count = 7
 input_source = "AI"
 
 # AI running values
-population_count = 10
+pop_count = 10
 run_max = 1000
 gen_max = 100
-pair_count = math.floor(math.sqrt(population_count))
+pair_count = math.floor(math.sqrt(pop_count))
 
 # Define number of input nodes (number of game cells)
 node_in = 16
@@ -52,7 +53,6 @@ display_board = numpy.zeros((4, 4), dtype=numpy.int64)
 #2 * * * *
 #3 * * * *
 #x
-
 
 
 
@@ -119,11 +119,13 @@ def update_score(value):
 def move(direction):
     moved = False
     # collapse, combine, collapse
+
+    # move cells up
     if direction == 'up':
         for y in range(4): # check per column
             for x in range(3):
                 i = 1
-                # while current cell is empty, loop until non-empty cell or end of list
+                # while current cell is empty, copy first non-empty cell or end of list
                 while game_board[x][y] == 0 and (x+i) < 4:
                     game_board[x][y] = game_board[x+i][y]
                     game_board[x+i][y] = 0
@@ -131,7 +133,7 @@ def move(direction):
                     if not game_board[x][y] == 0:
                         moved = True
             for x in range(3):
-                # if pair found, increment current cell and empty cell below
+                # if pair found, increment current cell and empty matching cell
                 if game_board[x][y] == game_board[x+1][y] and not game_board[x][y] == 0:
                     game_board[x][y] += 1
                     game_board[x+1][y] = 0
@@ -139,18 +141,20 @@ def move(direction):
                     moved = True
             for x in range(3):
                 i = 1
-                # while current cell is empty, loop until non-empty cell or end of list
+                # while current cell is empty, copy first non-empty cell or end of list
                 while game_board[x][y] == 0 and (x+i) < 4:
                     game_board[x][y] = game_board[x+i][y]
                     game_board[x+i][y] = 0
                     i += 1
                     if not game_board[x][y] == 0:
                         moved = True
+
+    # move cells down
     elif direction == 'down':
         for y in range(4): # check per column
             for x in reversed(range(1,4)):
                 i = 1
-                # while current cell is empty, loop up until non-empty cell or end of list
+                # while current cell is empty, copy first non-empty cell or end of list
                 while game_board[x][y] == 0 and (x-i) >= 0:
                     game_board[x][y] = game_board[x-i][y]
                     game_board[x-i][y] = 0
@@ -158,7 +162,7 @@ def move(direction):
                     if not game_board[x][y] == 0:
                         moved = True
             for x in reversed(range(1,4)):
-                # if pair found, increment current cell and empty cell above
+                # if pair found, increment current cell and empty matching cell
                 if game_board[x][y] == game_board[x-1][y] and not game_board[x][y] == 0:
                     game_board[x][y] += 1
                     game_board[x-1][y] = 0
@@ -166,18 +170,20 @@ def move(direction):
                     moved = True
             for x in reversed(range(1,4)):
                 i = 1
-                # while current cell is empty, loop up until non-empty cell or end of list
+                # while current cell is empty, copy first non-empty cell or end of list
                 while game_board[x][y] == 0 and (x-i) >= 0:
                     game_board[x][y] = game_board[x-i][y]
                     game_board[x-i][y] = 0
                     i += 1
                     if not game_board[x][y] == 0:
                         moved = True
+
+    # move cells left
     elif direction == 'left':
         for x in range(4): # check per row
             for y in range(3):
                 i = 1
-                # while current cell is empty, loop right until non-empty cell or end of list
+                # while current cell is empty, copy first non-empty cell or end of list
                 while game_board[x][y] == 0 and (y+i) < 4:
                     game_board[x][y] = game_board[x][y+i]
                     game_board[x][y+i] = 0
@@ -185,7 +191,7 @@ def move(direction):
                     if not game_board[x][y] == 0:
                         moved = True
             for y in range(3):
-                # if pair found, increment current cell and empty cell to right
+                # if pair found, increment current cell and empty matching cell
                 if game_board[x][y] == game_board[x][y+1] and not game_board[x][y] == 0:
                     game_board[x][y] += 1
                     game_board[x][y+1] = 0
@@ -193,18 +199,20 @@ def move(direction):
                     moved = True
             for y in range(3):
                 i = 1
-                # while current cell is empty, loop right until non-empty cell or end of list
+                # while current cell is empty, copy first non-empty cell or end of list
                 while game_board[x][y] == 0 and (y+i) < 4:
                     game_board[x][y] = game_board[x][y+i]
                     game_board[x][y+i] = 0
                     i += 1
                     if not game_board[x][y] == 0:
                         moved = True
+
+    # move cells right
     elif direction == 'right':
         for x in range(4): # check per row
             for y in reversed(range(1,4)):
                 i = 1
-                # while current cell is empty, loop right until non-empty cell or end of list
+                # while current cell is empty, copy first non-empty cell or end of list
                 while game_board[x][y] == 0 and (y-i) >= 0:
                     game_board[x][y] = game_board[x][y-i]
                     game_board[x][y-i] = 0
@@ -212,7 +220,7 @@ def move(direction):
                     if not game_board[x][y] == 0:
                         moved = True
             for y in reversed(range(1,4)):
-                # if pair found, increment current cell and empty cell to right
+                # if pair found, increment current cell and empty matching cell
                 if game_board[x][y] == game_board[x][y-1] and not game_board[x][y] == 0:
                     game_board[x][y] += 1
                     game_board[x][y-1] = 0
@@ -220,13 +228,18 @@ def move(direction):
                     moved = True
             for y in reversed(range(1,4)):
                 i = 1
-                # while current cell is empty, loop right until non-empty cell or end of list
+                # while current cell is empty, copy first non-empty cell or end of list
                 while game_board[x][y] == 0 and (y-i) >= 0:
                     game_board[x][y] = game_board[x][y-i]
                     game_board[x][y-i] = 0
                     i += 1
                     if not game_board[x][y] == 0:
                         moved = True
+
+    # exit with false if input invalid
+    else:
+        return False
+
     if moved:
         continue_game = random_value()
         if input_source == "User":
@@ -266,26 +279,40 @@ def initialize_board():
     random_value(True)
     return
 
-def calculate_move(input_intermediate_array, bias_1, intermediate_output_array, bias_out, pop):
-    input_values = numpy.zeros((node_in, 1), dtype=numpy.float64)
+# Calculte AI arrays based on nodes and biases.
+def calc_array(intermediate_value_array, output_value_array, bias):
+    a_1 = numpy.zeros((pop_count, 16, 4), dtype=numpy.int64)
+    a_2 = numpy.zeros((pop_count, 4), dtype=numpy.int64)
+
+    # Input -> (i.v. array) -> Node 1 + bias -> (o.v. array) -> Output
+    # ([in]*[iv] + bias)*[ov]
+    # [in]*[iv]*[ov] + bias*[ov]
+    # [in][a1] + [a2], [a1] = [iv][*[ov], [a2] = bias*[ov]
+    for pop in range(pop_count):
+        a_1[pop] = intermediate_value_array[pop].dot(output_value_array[pop])
+        a_2[pop] = bias[pop].dot(output_value_array[pop])
+
+    return a_1, a_2
+
+
+# Calculate the next move based on AI arrays
+def calculate_move(a_1, a_2, pop):
+    input_values = numpy.zeros(node_in, dtype=numpy.float64)
     # input values from game_board
     for x in range(4):
         for y in range(4):
-            input_values[x*4 + y][0] = game_board[x][y]
+            input_values[x*4 + y] = game_board[x][y]
 
-    # calculate next layer
-    intermediate_values = sigmoid(input_intermediate_array[pop].dot(input_values) + bias_1[pop])
-    #calculate output values
-    output_values = sigmoid(intermediate_output_array[pop].dot(sigmoid(input_intermediate_array[pop].dot(input_values) + bias_1[pop])) + bias_out[pop])
+    output_values = sigmoid(input_values.dot(a_1[pop]) + a_2[pop])
 
     # get direction to move
     ai_direction = input_type[numpy.argmax(output_values)]
 
     return ai_direction
 
-
-def run_single_pop(input_intermediate_array, bias_1, intermediate_output_array, bias_out, average_score, best_index, j):
-    for pop in [k for k in range(population_count) if (k%4==j)]:
+# Play individual members of the population
+def run_single_pop(a_1, a_2, average_score, best_index, j):
+    for pop in [k for k in range(pop_count) if (k%4==j)]:
         running_score = 0
         running_steps = 0
         input_values = numpy.zeros((node_in, 1), dtype=numpy.float64)
@@ -296,12 +323,22 @@ def run_single_pop(input_intermediate_array, bias_1, intermediate_output_array, 
             initialize_board()
 
             # calculate first move
-            ai_direction = calculate_move(input_intermediate_array, bias_1, intermediate_output_array, bias_out, pop)
+            ai_direction = calculate_move(a_1, a_2, pop)
             
             # Run single game
             index = 1
+            prev_score = [0] * 10
             while(move(ai_direction)):
-                ai_direction = calculate_move(input_intermediate_array, bias_1, intermediate_output_array, bias_out, pop)
+                ai_direction = calculate_move(a_1, a_2, pop)
+
+                # exit if score does not change after 10 moves
+                for i in range(9):
+                    prev_score[i] = prev_score[i + 1]
+                if prev_score[0] == prev_score[9] and index > 10:
+                    break
+                else:
+                    prev_score[9] = total_score
+
                 index += 1
             running_score += total_score
             running_steps += index
@@ -362,7 +399,7 @@ elif input_source == "AI":
 
     # calcuating number of pairs for Genetic Algorithm
     combination_count = binomial(pair_count, 2) + (pair_count * 2.0) # best, best combinations, and best + random
-    while combination_count > population_count:
+    while combination_count > pop_count:
         print ("Number of pairs too high. Combinations:", combination_count, ". Reducing by 1.")
         pair_count -= 1
         combination_count = binomial(pair_count, 2) + (pair_count * 2.0)
@@ -376,41 +413,46 @@ elif input_source == "AI":
     ###########
 
     # initialize AI weighted arrays and biases
-    input_intermediate_array = numpy.random.rand(population_count, node_1, node_in) #input to first level
-    intermediate_output_array = numpy.random.rand(population_count, node_out, node_1) #second level to output
+    intermediate_value_array = numpy.random.rand(pop_count, node_in, node_1) #input to first level
+    output_value_array = numpy.random.rand(pop_count, node_1, node_out) #second level to output
 
-    bias_1 = numpy.random.rand(population_count, node_1, 1) #bias from input to first level
-    bias_out = numpy.random.rand(population_count, node_out, 1) #bias from second level to output
+    bias = numpy.random.rand(pop_count, node_1) #bias from input to first level
 
     print ("Number of threads:", thread_count)
     print ("Number of generations:", gen_max)
-    print ("Population per generation:", population_count)
+    print ("Population per generation:", pop_count)
     print ("Max runs per population member:", run_max)
     print ("Carryover per generation:", pair_count, '\n')
 
     time_start = time.time()
     t_1 = time_start
+    total_elapse = []
 
     for gen in range(gen_max):
 
         print ("Generation:", gen + 1)
 
+        a_1, a_2 = calc_array(intermediate_value_array, output_value_array, bias)
+
         # initialize empty averages
         best_index = numpy.zeros((pair_count, 3), dtype=numpy.float64)
-        average_score = numpy.zeros((population_count, 1), dtype=numpy.float64)
-        average_steps = numpy.zeros((population_count, 1), dtype=numpy.float64)
+        average_score = numpy.zeros((pop_count, 1), dtype=numpy.float64)
+        average_steps = numpy.zeros((pop_count, 1), dtype=numpy.float64)
 
         # spin off population runs into n separate threads
         running_threads = []
+
+
         for j in range(thread_count):
             # loop through performance for each member
-            running_threads.append(threading.Thread(target=run_single_pop, args=(input_intermediate_array, bias_1, intermediate_output_array, bias_out, average_score, best_index, j)))
+            running_threads.append(threading.Thread(target=run_single_pop, args=(a_1, a_2, average_score, best_index, j)))
             running_threads[-1].start()
 
         # wait for all threads to exit
         for thread in running_threads:
             thread.join()
 
+        total_elapse.append(time.time() - time_start)
         # Output every n generations
         if ((gen+1)%10 == 0) or gen == (gen_max-1):
             time_end = time.time()
@@ -425,6 +467,11 @@ elif input_source == "AI":
             for i  in range(pair_count):
                 print ("\tID:", int(best_index[i][0]), ", Average Score:", round(best_index[i][1], 2), ", Average Steps:", round(best_index[i][2], 2))
             print('\n')
+            try:
+                numpy.savetxt("time.csv", total_elapse, delimiter=",")
+            except:
+                print("Error while saving, skipping.")
+                
 
     #########################
     # Genetic Algoritm Part #
@@ -433,43 +480,38 @@ elif input_source == "AI":
         # only calculate nex generation if not last gen
         if not gen == (gen_max - 1):
             #copy population to temp values for calculation
-            new_IIA = input_intermediate_array.copy()
-            new_IOA = intermediate_output_array.copy()
-            new_bias_1 = bias_1.copy()
-            new_bias_out = bias_out.copy()
+            new_IIA = intermediate_value_array.copy()
+            new_IOA = output_value_array.copy()
+            new_bias = bias.copy()
 
             # Calculate new population members (take best and averages of them, fill rest with random)
             calc_index = 0
             for x in range(pair_count):
                 for y in range(x,pair_count):
                     if x==y: # Add best
-                        input_intermediate_array[calc_index] = new_IIA[int(best_index[x][0])]
-                        intermediate_output_array[calc_index] = new_IOA[int(best_index[x][0])]
+                        intermediate_value_array[calc_index] = new_IIA[int(best_index[x][0])]
+                        output_value_array[calc_index] = new_IOA[int(best_index[x][0])]
 
-                        bias_1[calc_index] = new_bias_1[int(best_index[x][0])]
-                        bias_out[calc_index] = new_bias_out[int(best_index[x][0])]
+                        bias[calc_index] = new_bias[int(best_index[x][0])]
                     else: # average and add pairs of best
-                        input_intermediate_array[calc_index] = (new_IIA[int(best_index[x][0])] + new_IIA[int(best_index[y][0])]) * 0.5
-                        intermediate_output_array[calc_index] = (new_IOA[int(best_index[x][0])] + new_IOA[int(best_index[y][0])]) * 0.5
+                        intermediate_value_array[calc_index] = (new_IIA[int(best_index[x][0])] + new_IIA[int(best_index[y][0])]) * 0.5
+                        output_value_array[calc_index] = (new_IOA[int(best_index[x][0])] + new_IOA[int(best_index[y][0])]) * 0.5
 
-                        bias_1[calc_index] = (new_bias_1[int(best_index[x][0])] + new_bias_1[int(best_index[y][0])]) * 0.5
-                        bias_out[calc_index] = (new_bias_out[int(best_index[x][0])] + new_bias_out[int(best_index[y][0])]) * 0.5
+                        bias[calc_index] = (new_bias[int(best_index[x][0])] + new_bias[int(best_index[y][0])]) * 0.5
                     calc_index += 1
 
             for x in range(pair_count): # average and add best with random
-                input_intermediate_array[calc_index] = (new_IIA[int(best_index[x][0])] + numpy.random.rand(node_1, node_in)) * 0.5
-                intermediate_output_array[calc_index] = (new_IOA[int(best_index[x][0])] + numpy.random.rand(node_out, node_1)) * 0.5
+                intermediate_value_array[calc_index] = (new_IIA[int(best_index[x][0])] + numpy.random.rand(node_in, node_1)) * 0.5
+                output_value_array[calc_index] = (new_IOA[int(best_index[x][0])] + numpy.random.rand(node_1, node_out)) * 0.5
 
-                bias_1[calc_index] = (new_bias_1[int(best_index[x][0])] + numpy.random.rand(node_1,1)) * 0.5
-                bias_out[calc_index] = (new_bias_out[int(best_index[x][0])] + numpy.random.rand(node_out,1)) * 0.5
+                bias[calc_index] = (new_bias[int(best_index[x][0])] + numpy.random.rand(node_1)) * 0.5
                 calc_index += 1
 
-            while calc_index < population_count: #fill rest with random
-                input_intermediate_array[calc_index] = numpy.random.rand(node_1, node_in)
-                intermediate_output_array[calc_index] = numpy.random.rand(node_out, node_1) * 0.5
+            while calc_index < pop_count: #fill rest with random
+                intermediate_value_array[calc_index] = numpy.random.rand(node_in, node_1)
+                output_value_array[calc_index] = numpy.random.rand(node_1, node_out) * 0.5
 
-                bias_1[calc_index] = numpy.random.rand(node_1,1) * 0.5
-                bias_out[calc_index] = numpy.random.rand(node_out,1) * 0.5
+                bias[calc_index] = numpy.random.rand(node_1) * 0.5
                 calc_index += 1
 
         
@@ -485,8 +527,8 @@ elif input_source == "AI":
 ################
 
 elif input_source == "Test":
-    input_intermediate_array = input("input_intermediate_array")
-    intermediate_output_array = input("ntermediate_output_array")
+    intermediate_value_array = input("intermediate_value_array")
+    output_value_array = input("ntermediate_output_array")
     bias_1 = input("bias_1")
     bias_out = input("bias_out")
 
@@ -495,8 +537,8 @@ elif input_source == "Test":
 if testing == True and not input_source == "User":
     
     if not input_source == "Test":
-        input_intermediate_array = input_intermediate_array[int(best_index[i][0])].copy()
-        intermediate_output_array = intermediate_output_array[int(best_index[i][0])].copy()
+        intermediate_value_array = intermediate_value_array[int(best_index[i][0])].copy()
+        output_value_array = output_value_array[int(best_index[i][0])].copy()
         bias_1 = bias_1[int(best_index[i][0])].copy()
         bias_out = bias_out[int(best_index[i][0])].copy()
 
@@ -509,9 +551,9 @@ if testing == True and not input_source == "User":
             input_values[x*4 + y][0] = game_board[x][y]
 
     # calculate next layer
-    intermediate_values = sigmoid(input_intermediate_array.dot(input_values) + bias_1)
+    intermediate_values = sigmoid(intermediate_value_array.dot(input_values) + bias_1)
     #calculate output values
-    output_values = sigmoid(intermediate_output_array.dot(intermediate_values) + bias_out)
+    output_values = sigmoid(output_value_array.dot(intermediate_values) + bias_out)
 
     # get direction to move
     ai_direction = input_type[numpy.argmax(output_values)]
@@ -527,9 +569,9 @@ if testing == True and not input_source == "User":
                 input_values[x*4 + y][0] = game_board[x][y]
 
         # calculate next layer
-        intermediate_values = sigmoid(input_intermediate_array.dot(input_values) + bias_1)
+        intermediate_values = sigmoid(intermediate_value_array.dot(input_values) + bias_1)
         #calculate output values
-        output_values = sigmoid(intermediate_output_array.dot(intermediate_values) + bias_out)
+        output_values = sigmoid(output_value_array.dot(intermediate_values) + bias_out)
         
         # get direction to move
         ai_direction = input_type[numpy.argmax(output_values)]
