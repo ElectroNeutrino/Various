@@ -3,31 +3,41 @@ import multiprocessing
 
 
 
-def mp_func_test(ra, ra_shape, tv, lock):
-    ra = ra.reshape(ra_shape)
+def mp_func_test(ra, wa, wa_shape, tv, lock):
+    wa = wa.reshape(wa_shape)
     with lock:
-        tv.value = ra[1][1]
+        tv.value = wa[1][1]
+        for x in range(wa_shape[0]):
+            for y in range(wa_shape[1]):
+                wa[x][y] = -ra[x][y]
+                tv.value = 5
+        wa[1][1] = 100
+    return
+                
 
 
 if __name__ == '__main__':
 
+    shape = (4, 4)
     write_lock = multiprocessing.Lock()
-    ra = numpy.random.rand(10, 4) # Create 4x4 array
-    ra_shape = ra.shape # store array shape
-    ra = multiprocessing.Array('d', ra.reshape(ra_shape[0] * ra_shape[1])) # Convert to flat multiprocess array
-    read_array = (numpy.frombuffer(ra.get_obj())) # make numpy type array handle
+    read_array = numpy.random.rand(shape[0], shape[1]) # Create an array
+    write_array = numpy.zeros(shape[0] * shape[1])
+    write_array[:] = multiprocessing.Array('d', write_array) # Convert to flat multiprocess array
     
-    test_value = multiprocessing.Value('d', 0) # create multiprocess scalar
-    p = multiprocessing.Process(target=mp_func_test,
-                                args=(read_array, ra_shape, test_value, write_lock))
+    test_value = multiprocessing.Value('d', 10) # create multiprocess scalar
+    my_args=(read_array, write_array, shape, test_value, write_lock)
+    p = multiprocessing.Process(target=mp_func_test, args=my_args)
 
-    read_array = read_array.reshape(ra_shape) # convert to original shape
+    write_array = write_array.reshape(shape) # convert to original shape
 
     p.start()
     p.join()
 
     print("read_array")
     print(read_array[:])
+
+    print("write_array")
+    print(write_array[:])
 
     print("test_value")
     print(test_value.value)
