@@ -356,7 +356,7 @@ def run_single_pop(a_1, a_2, score_queue, steps_queue, j):
         average_score[pop][0] = running_score / run_max
         average_steps[pop][0] = running_steps / run_max
 
-    # lock for mp write
+    # lock for multiprocessing write
     with writing_lock:
         score_queue.put(average_score)
         steps_queue.put(average_steps)
