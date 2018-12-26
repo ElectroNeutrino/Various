@@ -2,7 +2,7 @@ import numpy as np
 import random
 import math
 import time
-import multiprocessing
+import multiprocessing as mp
 from multiprocessing import SimpleQueue
 
 ###############
@@ -13,7 +13,7 @@ from multiprocessing import SimpleQueue
 np.random.seed(100)
 
 # Multiprocess definitions
-writing_lock = multiprocessing.Lock()
+writing_lock = mp.Lock()
 process_count = 7
 
 # Player
@@ -356,7 +356,7 @@ def run_single_pop(a_1, a_2, score_queue, steps_queue, j):
         average_score[pop][0] = running_score / run_max
         average_steps[pop][0] = running_steps / run_max
 
-    # lock for multiprocessing write
+    # lock for mp write
     with writing_lock:
         score_queue.put(average_score)
         steps_queue.put(average_steps)
@@ -446,7 +446,7 @@ elif input_source == "AI" and __name__ == '__main__':
         for j in range(process_count):
             # loop through performance for each member
             process_args = (a_1, a_2, average_score_queue, average_steps_queue, j)
-            running_processes.append(multiprocessing.Process(target=run_single_pop, args=process_args))
+            running_processes.append(mp.Process(target=run_single_pop, args=process_args))
             running_processes[-1].start()
 
         # wait for all processes to exit
