@@ -10,8 +10,14 @@
 ## "Spacebar" starts and stops    ##
 ## the simulation.                ##
 ##                                ##
+## "C" clears the screen          ##
+##                                ##
 ## Click and drag the mouse       ##
 ## pointer to fill cells.         ##
+##                                ##
+## Various properties can be      ##
+## adjusted by editing the        ##
+## appropriate variable.          ##
 ##                                ##
 ####################################
 ####################################
@@ -31,6 +37,10 @@ Gray = (191, 191, 191)
 x_res = 1600
 y_res = 1200
 square_size = 15
+# screen edge behavior
+Wrap = True # overrides Clamp
+Clamp = False
+
 
 x_range = x_res / square_size
 y_range = y_res / square_size
@@ -38,8 +48,6 @@ y_range = y_res / square_size
 # game board
 board = []
 
-
-#Gosper = [[
 
 def vertical_lines(n, surface):
     for i in range((x_res / n) + 1):
@@ -65,9 +73,6 @@ def draw_square(x, y, surface):
 
 def check_square():
 
-    Wrap = True
-    Clamp = False
-    
     #create tally board
     square_count = []
     for i in range(x_range):
