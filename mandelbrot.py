@@ -1,5 +1,5 @@
 import math
-import Image
+from PIL import Image
 
 
 def complex_mag(x):
@@ -73,17 +73,17 @@ count = 0
 
 max_count = size_x * size_y / 2
 last_progress = 0
-print "0% complete."
+print("0% complete.")
 
 for l in range(img.size[0]):
-    for m in range((size_y / 2) + 1):
+    for m in range(int(size_y / 2) + 1):
         test_val = complex(scale * (float(l) / float(size_y) - 0.875), scale * (float(m) / float(size_y) - 0.5))
         (in_set, a) = is_in_mandelbrot(test_val, max_test)
         count = count + 1
         progress = (100 * count) // max_count
         color_val = 0
         if not (progress == last_progress):  #((progress % 10) == 0) and 
-            print progress, "% complete."
+            print(progress, "% complete.")
             last_progress = progress
         if not in_set:
             color_val = long_to_color(float(max_test - a) / 1.5, 0.0, float(max_test), 255)
