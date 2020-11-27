@@ -74,15 +74,17 @@ print(max_count, " iterations complete, elapsed time: ", round(time.time() - t_s
 
 print("Creating plot.")
 
-pyplot.plot(simulation_time, Temp)
-pyplot.hlines(Tf, xmin=simulation_time[0], xmax=simulation_time[max_count-1], linestyles="dashed", colors="r")
-pyplot.grid()
-pyplot.ylim(ymin=0)
-pyplot.xlim(xmin=0)
-pyplot.xlabel("Time (s)")
-pyplot.ylabel("Temperature (K)")
-pyplot.suptitle("Radiant Heating of a Blackbody")
-pyplot.title(label="Input Power = " + str(P) + " W, Final Temp = " + str(round(Tf,2)) +" K", fontsize=10)
+fig = pyplot.figure()
+ax = fig.gca()
+ax.plot(simulation_time, Temp)
+ax.hlines(Tf, xmin=simulation_time[0], xmax=simulation_time[max_count-1], linestyles="dashed", colors="r")
+ax.grid()
+ax.set_ylim(ymin=0)
+ax.set_xlim(xmin=0)
+ax.set_xlabel("Time (s)")
+ax.set_ylabel("Temperature (K)")
+fig.suptitle("Radiant Heating of a Blackbody")
+ax.set_title(label="Input Power = " + str(P) + " W, Final Temp = " + str(round(Tf,2)) +" K", fontsize=10)
 
 
 ########
@@ -112,7 +114,7 @@ with open(save_folder + "Radiant Heating.csv", "w", newline="") as f:
     writer.writerows(data)
 
 
-pyplot.savefig(save_folder + "Radiant Heating.png")
-pyplot.show()
+fig.savefig(save_folder + "Radiant Heating.png")
+fig.show()
 
 ########
