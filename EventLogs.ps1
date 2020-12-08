@@ -23,7 +23,7 @@ $my_end = Get-Date
 
 
 ## Create list of event logs to pull from
-## Use comments to add or a line to the list
+## Use comments to add or remove a line to the list
 
 $my_logs = @()
 $my_logs += "Application"
@@ -31,7 +31,7 @@ $my_logs += "System"
 
 
 ## Create a list of event types to gather
-## Use comments to add or a line to the list
+## Use comments to add or remove a line to the list
 
 $my_events = @()
 $my_events += "Error"
