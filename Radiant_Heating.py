@@ -5,11 +5,11 @@ import matplotlib.pyplot as pyplot
 
 ## Physical constants ##
 
-emissivity = 1.0
+emissivity = 1.0 #longwave emissivity
 SB_constant = 5.670e-8
-albedo = 0.3
+albedo = 0.3 #shortwave albedo
 a = emissivity * SB_constant
-b = 1000
+b = 1000 # milliseconds per second
 
 ########
 
@@ -17,14 +17,15 @@ b = 1000
 
 ## Simulation parameters
 
-save_folder = os.getenv("HOME") + "\\Documents\\Programming\\Python\\Radiant Heating\\"
+save_folder = os.getenv("HOME") + "\\Radiant Heating\\"
 
-P = 342
-dt = 0.001
-seconds = 2000
-max_count = int(seconds / dt)
+P = 342 # incoming power
+dt = 0.001 # time step
+seconds = 2000 # simulation run time
+max_count = int(seconds / dt) #number of steps to run
 data_count = 100
 
+#initial temperature
 T0 = 0
 
 t_start = time.time()
@@ -35,6 +36,8 @@ t_start = time.time()
 
 ## Functions ##
 
+# first law of thermodynamics:
+# b*dT = (dQ - PdV)*dt = (Flux_in - Flux_out)*dt
 def dT(T):
     return (P * (1 - albedo) - a * T**4) * dt / b
 
@@ -48,16 +51,20 @@ def Tn(T):
 
 ## Calculate values and store##
 
+# equilibrium -> dT = 0, so Flux_in = Flux_out, find temperature where that happens
 Tf = (P * (1 - albedo) / a)**(1/4)
 
+# data arrays
 Temp = []
 simulation_time = []
 
+# set inital values
 Temp.append(T0)
 simulation_time.append(0)
 
 print("Total iterations: ", max_count)
 
+# run simulation steps
 for n in range(1,max_count):
     Temp.append(Tn(Temp[n-1]))
     simulation_time.append(n * dt)
@@ -77,13 +84,13 @@ print("Creating plot.")
 fig = pyplot.figure()
 ax = fig.gca()
 ax.plot(simulation_time, Temp)
-ax.hlines(Tf, xmin=simulation_time[0], xmax=simulation_time[max_count-1], linestyles="dashed", colors="r")
+ax.hlines(Tf, xmin=simulation_time[0], xmax=simulation_time[max_count-1], linestyles="dashed", colors="r") #mark equilibrium temperature as horizontal dashed line
 ax.grid()
 ax.set_ylim(ymin=0)
 ax.set_xlim(xmin=0)
 ax.set_xlabel("Time (s)")
 ax.set_ylabel("Temperature (K)")
-fig.suptitle("Radiant Heating of a Blackbody")
+fig.suptitle("Radiant Heating of a greybody")
 ax.set_title(label="Input Power = " + str(P) + " W, Final Temp = " + str(round(Tf,2)) +" K", fontsize=10)
 
 
