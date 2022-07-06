@@ -5,11 +5,11 @@ import matplotlib.pyplot as pyplot
 
 ## Physical constants ##
 
-emissivity = 1.0 #longwave emissivity
+emissivity = 1.0
 SB_constant = 5.670e-8
-albedo = 0.3 #shortwave albedo
+albedo = 0.3
 a = emissivity * SB_constant
-b = 1000 # milliseconds per second
+b = 1000
 
 ########
 
@@ -17,7 +17,7 @@ b = 1000 # milliseconds per second
 
 ## Simulation parameters
 
-save_folder = os.getenv("HOME") + "\\Radiant Heating\\"
+save_folder = os.getenv("HOME")
 
 P = 342 # incoming power
 dt = 0.001 # time step
@@ -116,12 +116,12 @@ else:
         data.append([simulation_time[n],Temp[n]])
 
     
-with open(save_folder + "Radiant Heating.csv", "w", newline="") as f:
+with open(save_folder + "\\Radiant Heating.csv", "w+", newline="") as f:
     writer = csv.writer(f)
     writer.writerows(data)
 
 
-fig.savefig(save_folder + "Radiant Heating.png")
+fig.savefig(save_folder + "\\Radiant Heating.png")
 fig.show()
 
 ########
