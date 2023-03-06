@@ -10,8 +10,9 @@ kb = 1.38064952e-23 # Boltzmann constant (J / K)
 sb = 5.670374419e-8 # Stefan-Boltzmann constant (W/(m^2 K^4))
 wb = 2898 # Wien's displacement constant (µm * K)
 
-max_x = np.amax(wb / temperature) * 2
-x = np.linspace(max_x, 0, 500, endpoint=False)
+max_x = np.amax(wb / temperature) * 4
+x = np.linspace(max_x, 0, 5000, endpoint=False)
+
 
 def Spectral_Radiance(l, T): # wavelength in µm, temperature in Kelvin
     m = l * 1e-6 # convert to µm
@@ -24,11 +25,11 @@ for n in range(len(temperature)):
     y.append(Spectral_Radiance(x, temperature[n])/Spectral_Radiance(wb/temperature[n], temperature[n]))
 
 fig = pyplot.figure()
-ax = pyplot.axes(xlim=(0, max_x), ylim=(0, np.amax(y)*1.1))
+ax = pyplot.axes(xlim=(0.1, max_x), ylim=(0, 1.1))
 ax.set_xlabel("Wavelength (µm)")
 ax.set_ylabel("Spectral Radiance Ratio")
 ax.grid()
-
+ax.set_xscale('log')
 
 line = []
 for n in range(len(y)):
