@@ -239,7 +239,7 @@ fig, (ax1, ax2, ax3) = pyplot.subplots(1,3, sharey=True, figsize=(12, 10))
 
 # add labels
 fig.suptitle("Standard Atmosphere")
-ax1.set_xlabel("Density (kg/m^2)")
+ax1.set_xlabel("Density (kg/m^3)")
 ax2.set_xlabel("Pressure (kPa)")
 ax3.set_xlabel("Temperature (K)")
 ax1.set_ylabel("Height (m)")
